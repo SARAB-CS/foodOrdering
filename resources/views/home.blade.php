@@ -215,6 +215,7 @@ nav a.cta:hover { background: var(--beni); color: #fff; }
     box-shadow: 8px 10px 0 rgba(179,38,30,.18);
 }
 
+a.card { display: block; text-decoration: none; color: inherit; }
 /* مكان الصورة (فاضي الحين). لما تجهز الصور استبدلي div.photo بوسم img */
 .photo,
 .card img {
@@ -325,6 +326,113 @@ nav a.cta:hover { background: var(--beni); color: #fff; }
 .step h4 { font-family: 'Aref Ruqaa', serif; font-size: 21px; line-height: 1.5; }
 .step .en { color: var(--muted); font-size: 14px; }
 
+/* ============ نافذة تفاصيل الطبق ============ */
+.card { cursor: pointer; }
+.card:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+.card .more {
+    display: inline-block;
+    margin-right: 10px;
+    color: var(--torii);
+    font-size: 14px;
+    border-bottom: 1px solid var(--torii);
+}
+
+.modal {
+    position: fixed; inset: 0;
+    background: rgba(28,28,28,.68);
+    display: none;
+    align-items: center; justify-content: center;
+    padding: 20px;
+    z-index: 100;
+}
+.modal.open { display: flex; animation: fadeIn .25s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal-box {
+    position: relative;
+    background: var(--paper);
+    border: 2px solid var(--gold);
+    border-radius: 4px;
+    box-shadow: 10px 10px 0 rgba(179,38,30,.25);
+    width: 100%; max-width: 860px; max-height: 92vh;
+    overflow: auto;
+    display: grid; grid-template-columns: 1fr 1.1fr;
+}
+.modal-close {
+    position: absolute; top: 10px; left: 12px;
+    width: 38px; height: 38px;
+    background: var(--sumi); color: var(--washi);
+    border: 1px solid var(--gold); border-radius: 50%;
+    font-size: 22px; line-height: 1; cursor: pointer; z-index: 2;
+}
+.modal-close:hover { background: var(--torii); }
+
+.modal-photo {
+    min-height: 360px;
+    display: flex; align-items: center; justify-content: center;
+    background:
+        repeating-radial-gradient(circle at 50% 120%, transparent 0 16px, rgba(184,147,74,.20) 16px 17px),
+        linear-gradient(135deg, #EFE3D0, #E4D2B8);
+    border-left: 1px solid rgba(184,147,74,.55);
+}
+.modal-photo img { width: 100%; height: 100%; object-fit: cover; }
+.modal-photo span {
+    font-family: 'Shippori Mincho', serif; font-weight: 800;
+    font-size: 100px; color: rgba(179,38,30,.32); letter-spacing: 6px;
+}
+
+.modal-info { padding: 34px 30px; }
+.m-badge {
+    display: inline-block; background: var(--sumi); color: var(--gold);
+    padding: 0 14px; border-radius: 2px; font-size: 14px; margin-bottom: 8px;
+}
+.m-badge .en { color: var(--washi); margin-right: 6px; font-size: 13px; }
+.modal-info h2 { font-family: 'Aref Ruqaa', serif; font-size: 44px; color: var(--torii); line-height: 1.4; }
+.m-en { font-family: 'Shippori Mincho', serif; font-size: 22px; font-weight: 700; letter-spacing: .06em; }
+.m-jp { font-family: 'Shippori Mincho', serif; color: var(--gold); font-size: 18px; letter-spacing: 5px; margin-bottom: 6px; }
+.m-desc { margin: 10px 0; }
+.m-ing { margin: 12px 0; }
+.m-ing strong { font-family: 'Aref Ruqaa', serif; color: var(--torii); font-size: 20px; }
+.m-ing ul { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.m-ing li {
+    background: var(--washi); border: 1px solid rgba(184,147,74,.6);
+    border-radius: 2px; padding: 0 12px; font-size: 14px;
+}
+.m-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin: 18px 0; flex-wrap: wrap; }
+.qty { display: flex; align-items: center; border: 1px solid var(--gold); border-radius: 2px; background: #fff; }
+.qty button {
+    width: 40px; height: 40px; border: 0; background: transparent;
+    font-size: 22px; color: var(--torii); cursor: pointer;
+}
+.qty button:hover { background: var(--washi); }
+.qty span { min-width: 40px; text-align: center; font-family: 'Shippori Mincho', serif; font-weight: 700; font-size: 18px; }
+.m-total {
+    background: var(--matcha); color: #fff; padding: 2px 20px; border-radius: 2px;
+    font-family: 'Shippori Mincho', serif; font-weight: 800; font-size: 24px; direction: ltr;
+}
+.m-add {
+    width: 100%; background: var(--torii); color: #fff; border: 1px solid var(--gold);
+    padding: 12px; border-radius: 2px; cursor: pointer;
+    font-family: 'Aref Ruqaa', serif; font-size: 20px; transition: .3s;
+}
+.m-add:hover { background: var(--gold); color: var(--sumi); }
+
+.toast {
+    position: fixed; bottom: 26px; right: 50%; transform: translateX(50%) translateY(30px);
+    background: var(--sumi); color: var(--washi); border: 1px solid var(--gold);
+    padding: 10px 26px; border-radius: 2px; opacity: 0; pointer-events: none;
+    transition: .35s; z-index: 200;
+}
+.toast.show { opacity: 1; transform: translateX(50%) translateY(0); }
+
+@media (max-width: 760px) {
+    .modal-box { grid-template-columns: 1fr; }
+    .modal-photo { min-height: 190px; border-left: 0; border-bottom: 1px solid rgba(184,147,74,.55); }
+    .modal-photo span { font-size: 70px; }
+    .modal-info { padding: 22px 20px; }
+    .modal-info h2 { font-size: 36px; }
+}
+
 /* ============ الفوتر ============ */
 footer {
     background: var(--sumi);
@@ -391,12 +499,12 @@ footer .small { color: #A99C8A; font-size: 14px; margin-top: 10px; }
     </div>
 </section>
 
-{{-- ============ قائمة الطعام ============ --}}
+{{-- ============ قائمة الطعام (مكتوبة يدوي الحين) ============ --}}
 <section class="menu" id="menu">
 
     <div class="section-title">
         <h2>قائمة الطعام <span class="en">| Our Menu</span></h2>
-        <p>تجربة يابانية مميزة في كل طبق</p>
+        <p>اضغط على أي طبق لتشوف تفاصيله | Tap any dish for details</p>
     </div>
 
     {{-- ===== الأطباق الرئيسية ===== --}}
@@ -409,44 +517,67 @@ footer .small { color: #A99C8A; font-size: 14px; margin-top: 10px; }
 
         <div class="products">
 
-            <div class="card">
-                {{-- مكان الصورة. لاحقًا: <img src="{{ asset('images/sushi.jpg') }}" alt="Sushi"> --}}
+            {{-- الكرت: البيانات داخل data-* وتطلع في النافذة لما تضغطين عليه --}}
+            <div class="card" tabindex="0" role="button"
+                 data-ar="السوشي" data-en="Sushi" data-jp="寿司"
+                 data-desc="أرز ياباني مع السمك الطازج" data-price="28"
+                 data-cat="الأطباق الرئيسية" data-cat-en="Main Dishes"
+                 data-ing-ar="أرز، سمك طازج، أعشاب بحرية" data-ing-en="Rice, fresh fish, nori">
                 <div class="photo"><span>寿司</span></div>
                 <div class="card-content">
                     <h4>السوشي</h4>
                     <div class="english-name">Sushi</div>
                     <p class="description">أرز ياباني مع السمك الطازج</p>
                     <div class="price">28 SAR</div>
+                    <span class="more">التفاصيل | Details ›</span>
                 </div>
             </div>
 
-            <div class="card">
+            {{-- الكرت: البيانات داخل data-* وتطلع في النافذة لما تضغطين عليه --}}
+            <div class="card" tabindex="0" role="button"
+                 data-ar="الرامن" data-en="Ramen" data-jp="拉麺"
+                 data-desc="شوربة يابانية مع النودلز" data-price="32"
+                 data-cat="الأطباق الرئيسية" data-cat-en="Main Dishes"
+                 data-ing-ar="نودلز، مرق، بيض" data-ing-en="Noodles, broth, egg">
                 <div class="photo"><span>拉麺</span></div>
                 <div class="card-content">
                     <h4>الرامن</h4>
                     <div class="english-name">Ramen</div>
                     <p class="description">شوربة يابانية مع النودلز</p>
                     <div class="price">32 SAR</div>
+                    <span class="more">التفاصيل | Details ›</span>
                 </div>
             </div>
 
-            <div class="card">
+            {{-- الكرت: البيانات داخل data-* وتطلع في النافذة لما تضغطين عليه --}}
+            <div class="card" tabindex="0" role="button"
+                 data-ar="دجاج الترياكي" data-en="Teriyaki Chicken" data-jp="照焼"
+                 data-desc="دجاج بصوص الترياكي" data-price="35"
+                 data-cat="الأطباق الرئيسية" data-cat-en="Main Dishes"
+                 data-ing-ar="دجاج، صوص ترياكي، أرز" data-ing-en="Chicken, teriyaki sauce, rice">
                 <div class="photo"><span>照焼</span></div>
                 <div class="card-content">
                     <h4>دجاج الترياكي</h4>
                     <div class="english-name">Teriyaki Chicken</div>
                     <p class="description">دجاج بصوص الترياكي</p>
                     <div class="price">35 SAR</div>
+                    <span class="more">التفاصيل | Details ›</span>
                 </div>
             </div>
 
-            <div class="card">
+            {{-- الكرت: البيانات داخل data-* وتطلع في النافذة لما تضغطين عليه --}}
+            <div class="card" tabindex="0" role="button"
+                 data-ar="البنتو" data-en="Bento Box" data-jp="弁当"
+                 data-desc="وجبة يابانية متنوعة" data-price="42"
+                 data-cat="الأطباق الرئيسية" data-cat-en="Main Dishes"
+                 data-ing-ar="أرز، دجاج، خضار" data-ing-en="Rice, chicken, vegetables">
                 <div class="photo"><span>弁当</span></div>
                 <div class="card-content">
                     <h4>البنتو</h4>
                     <div class="english-name">Bento Box</div>
                     <p class="description">وجبة يابانية متنوعة</p>
                     <div class="price">42 SAR</div>
+                    <span class="more">التفاصيل | Details ›</span>
                 </div>
             </div>
 
@@ -463,33 +594,51 @@ footer .small { color: #A99C8A; font-size: 14px; margin-top: 10px; }
 
         <div class="products">
 
-            <div class="card">
+            {{-- الكرت: البيانات داخل data-* وتطلع في النافذة لما تضغطين عليه --}}
+            <div class="card" tabindex="0" role="button"
+                 data-ar="كيكة الماتشا" data-en="Matcha Cake" data-jp="抹茶"
+                 data-desc="كيكة يابانية بنكهة الشاي الأخضر" data-price="22"
+                 data-cat="الحلويات" data-cat-en="Desserts"
+                 data-ing-ar="دقيق، بيض، ماتشا" data-ing-en="Flour, eggs, matcha">
                 <div class="photo"><span>抹茶</span></div>
                 <div class="card-content">
                     <h4>كيكة الماتشا</h4>
                     <div class="english-name">Matcha Cake</div>
                     <p class="description">كيكة يابانية بنكهة الشاي الأخضر</p>
                     <div class="price">22 SAR</div>
+                    <span class="more">التفاصيل | Details ›</span>
                 </div>
             </div>
 
-            <div class="card">
+            {{-- الكرت: البيانات داخل data-* وتطلع في النافذة لما تضغطين عليه --}}
+            <div class="card" tabindex="0" role="button"
+                 data-ar="آيس كريم الماتشا" data-en="Matcha Ice Cream" data-jp="氷菓"
+                 data-desc="آيس كريم بنكهة الماتشا" data-price="18"
+                 data-cat="الحلويات" data-cat-en="Desserts"
+                 data-ing-ar="حليب، ماتشا، سكر" data-ing-en="Milk, matcha, sugar">
                 <div class="photo"><span>氷菓</span></div>
                 <div class="card-content">
                     <h4>آيس كريم الماتشا</h4>
                     <div class="english-name">Matcha Ice Cream</div>
                     <p class="description">آيس كريم بنكهة الماتشا</p>
                     <div class="price">18 SAR</div>
+                    <span class="more">التفاصيل | Details ›</span>
                 </div>
             </div>
 
-            <div class="card">
+            {{-- الكرت: البيانات داخل data-* وتطلع في النافذة لما تضغطين عليه --}}
+            <div class="card" tabindex="0" role="button"
+                 data-ar="دوراياكي" data-en="Dorayaki" data-jp="銅鑼"
+                 data-desc="فطائر يابانية بحشوة حلوة" data-price="20"
+                 data-cat="الحلويات" data-cat-en="Desserts"
+                 data-ing-ar="دقيق، بيض، حشوة حلوة" data-ing-en="Flour, eggs, sweet filling">
                 <div class="photo"><span>銅鑼</span></div>
                 <div class="card-content">
                     <h4>دوراياكي</h4>
                     <div class="english-name">Dorayaki</div>
                     <p class="description">فطائر يابانية بحشوة حلوة</p>
                     <div class="price">20 SAR</div>
+                    <span class="more">التفاصيل | Details ›</span>
                 </div>
             </div>
 
@@ -506,33 +655,51 @@ footer .small { color: #A99C8A; font-size: 14px; margin-top: 10px; }
 
         <div class="products">
 
-            <div class="card">
+            {{-- الكرت: البيانات داخل data-* وتطلع في النافذة لما تضغطين عليه --}}
+            <div class="card" tabindex="0" role="button"
+                 data-ar="شاي الماتشا" data-en="Matcha Tea" data-jp="茶"
+                 data-desc="شاي أخضر ياباني تقليدي" data-price="15"
+                 data-cat="المشروبات" data-cat-en="Drinks"
+                 data-ing-ar="ماتشا، ماء" data-ing-en="Matcha, water">
                 <div class="photo"><span>茶</span></div>
                 <div class="card-content">
                     <h4>شاي الماتشا</h4>
                     <div class="english-name">Matcha Tea</div>
                     <p class="description">شاي أخضر ياباني تقليدي</p>
                     <div class="price">15 SAR</div>
+                    <span class="more">التفاصيل | Details ›</span>
                 </div>
             </div>
 
-            <div class="card">
+            {{-- الكرت: البيانات داخل data-* وتطلع في النافذة لما تضغطين عليه --}}
+            <div class="card" tabindex="0" role="button"
+                 data-ar="القهوة المثلجة" data-en="Iced Coffee" data-jp="珈琲"
+                 data-desc="قهوة باردة منعشة" data-price="17"
+                 data-cat="المشروبات" data-cat-en="Drinks"
+                 data-ing-ar="قهوة، ثلج" data-ing-en="Coffee, ice">
                 <div class="photo"><span>珈琲</span></div>
                 <div class="card-content">
                     <h4>القهوة المثلجة</h4>
                     <div class="english-name">Iced Coffee</div>
                     <p class="description">قهوة باردة منعشة</p>
                     <div class="price">17 SAR</div>
+                    <span class="more">التفاصيل | Details ›</span>
                 </div>
             </div>
 
-            <div class="card">
+            {{-- الكرت: البيانات داخل data-* وتطلع في النافذة لما تضغطين عليه --}}
+            <div class="card" tabindex="0" role="button"
+                 data-ar="عصير الليمون" data-en="Lemon Juice" data-jp="檸檬"
+                 data-desc="عصير ليمون طازج" data-price="12"
+                 data-cat="المشروبات" data-cat-en="Drinks"
+                 data-ing-ar="ليمون، ماء، سكر" data-ing-en="Lemon, water, sugar">
                 <div class="photo"><span>檸檬</span></div>
                 <div class="card-content">
                     <h4>عصير الليمون</h4>
                     <div class="english-name">Lemon Juice</div>
                     <p class="description">عصير ليمون طازج</p>
                     <div class="price">12 SAR</div>
+                    <span class="more">التفاصيل | Details ›</span>
                 </div>
             </div>
 
@@ -626,6 +793,44 @@ footer .small { color: #A99C8A; font-size: 14px; margin-top: 10px; }
 
 </section>
 
+{{-- ============ نافذة تفاصيل الطبق (تظهر لما تضغطين على أي كرت) ============ --}}
+<div class="modal" id="modal" aria-hidden="true">
+    <div class="modal-box" role="dialog" aria-modal="true">
+        <button class="modal-close" id="mClose" aria-label="إغلاق | Close">&times;</button>
+
+        {{-- الصورة: لاحقًا تحطين img مكان الكلمة اليابانية --}}
+        <div class="modal-photo" id="mPhoto"><span id="mJp"></span></div>
+
+        <div class="modal-info">
+            <div class="m-badge" id="mCat"></div>
+            <h2 id="mAr"></h2>
+            <div class="m-en" id="mEn"></div>
+            <div class="m-jp" id="mJpName"></div>
+
+            <p class="m-desc" id="mDesc"></p>
+
+            <div class="m-ing">
+                <strong>المكونات | Ingredients</strong>
+                <ul id="mIng"></ul>
+            </div>
+
+            <div class="m-row">
+                <div class="qty">
+                    <button type="button" id="qMinus" aria-label="نقص | Less">&minus;</button>
+                    <span id="qNum">1</span>
+                    <button type="button" id="qPlus" aria-label="زيادة | More">+</button>
+                </div>
+                <div class="m-total" id="mTotal"></div>
+            </div>
+
+            {{-- زر السلة شكلي الحين، والطالبة المسؤولة عن السلة تربطه --}}
+            <button type="button" class="m-add" id="mAdd">أضف للسلة | Add to Cart</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast">تمت الإضافة للسلة | Added to cart</div>
+
 {{-- ============ الفوتر ============ --}}
 <footer>
     <h3>SAKURA 桜</h3>
@@ -633,6 +838,82 @@ footer .small { color: #A99C8A; font-size: 14px; margin-top: 10px; }
     <p class="en">Japanese Taste in Every Bite</p>
     <p class="small en">© 2026 SAKURA Restaurant</p>
 </footer>
+
+<script>
+// ===== نافذة تفاصيل الطبق =====
+(function () {
+    var modal = document.getElementById('modal');
+    var price = 0, qty = 1;
+
+    function $(id) { return document.getElementById(id); }
+
+    // تحديث الكمية والمجموع
+    function render() {
+        $('qNum').textContent = qty;
+        $('mTotal').textContent = (price * qty) + ' SAR';
+    }
+
+    // فتح النافذة وتعبئتها ببيانات الكرت (من data-*)
+    function openModal(card) {
+        var d = card.dataset;
+        price = parseFloat(d.price);
+        qty = 1;
+
+        $('mJp').textContent = d.jp;
+        $('mCat').innerHTML = d.cat + ' <span class="en">' + d.catEn + '</span>';
+        $('mAr').textContent = d.ar;
+        $('mEn').textContent = d.en;
+        $('mJpName').textContent = d.jp;
+        $('mDesc').textContent = d.desc;
+
+        // المكونات: كل مكوّن في مربع صغير
+        var ar = d.ingAr.split('، '), en = d.ingEn.split(', ');
+        var list = $('mIng');
+        list.innerHTML = '';
+        ar.forEach(function (item, i) {
+            var li = document.createElement('li');
+            li.textContent = item + ' · ' + (en[i] || '');
+            list.appendChild(li);
+        });
+
+        render();
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    // الضغط على أي كرت يفتح النافذة (وبالكيبورد: Enter)
+    document.querySelectorAll('.card').forEach(function (card) {
+        card.addEventListener('click', function () { openModal(card); });
+        card.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(card); }
+        });
+    });
+
+    // الإغلاق: زر X، أو الضغط خارج النافذة، أو Esc
+    $('mClose').addEventListener('click', closeModal);
+    modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+
+    // زيادة ونقصان الكمية
+    $('qPlus').addEventListener('click', function () { qty++; render(); });
+    $('qMinus').addEventListener('click', function () { if (qty > 1) { qty--; render(); } });
+
+    // زر السلة (شكلي): يعرض رسالة صغيرة. الطالبة المسؤولة عن السلة تربطه لاحقًا
+    $('mAdd').addEventListener('click', function () {
+        closeModal();
+        var t = $('toast');
+        t.classList.add('show');
+        setTimeout(function () { t.classList.remove('show'); }, 2200);
+    });
+})();
+</script>
 
 </body>
 </html>
