@@ -1,167 +1,70 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تسجيل | Register - SAKURA</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Noto+Naskh+Arabic:wght@400;500;700&family=Shippori+Mincho:wght@500;700;800&display=swap" rel="stylesheet">
-
-<style>
-/* ============ الألوان اليابانية ============ */
-:root {
-    --washi:#F5EFE6; --paper:#FBF7F0; --sumi:#1C1C1C; --torii:#B3261E;
-    --beni:#8E1B16; --matcha:#6B7F4E; --gold:#B8934A; --muted:#7A6F64;
-}
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-    min-height:100vh;
-    display:grid; grid-template-columns:1fr 1fr;
-    background:var(--washi); color:var(--sumi);
-    font-family:'Noto Naskh Arabic','Shippori Mincho',serif;
-    font-size:17px; line-height:1.9;
-}
-.en { font-family:'Shippori Mincho',serif; letter-spacing:.06em; }
-
-/* ===== الجانب الياباني (الشمس الحمراء + الشعار) ===== */
-.side {
-    position:relative; overflow:hidden;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    text-align:center; padding:50px 30px; color:var(--washi);
-    background:
-        repeating-radial-gradient(circle at 50% 100%, transparent 0 18px, rgba(184,147,74,.10) 18px 20px),
-        linear-gradient(180deg,#1C1C1C 0%,#2B1B19 60%,#3A1B18 100%);
-    border-left:4px solid var(--gold);
-}
-.side::before {
-    content:""; position:absolute; width:280px; height:280px; border-radius:50%;
-    background:radial-gradient(circle,var(--torii),var(--beni));
-    top:50%; left:50%; transform:translate(-50%,-55%);
-    opacity:.85; box-shadow:0 0 90px rgba(179,38,30,.45);
-}
-.side > * { position:relative; }
-.side .jp { font-family:'Shippori Mincho',serif; color:var(--gold); letter-spacing:10px; font-size:20px; }
-.side h1 {
-    font-family:'Shippori Mincho',serif; font-weight:800; font-size:62px;
-    letter-spacing:8px; line-height:1.2; text-shadow:0 3px 20px rgba(0,0,0,.6);
-}
-.side p { font-size:19px; text-shadow:0 2px 12px rgba(0,0,0,.7); }
-.side .en-line { font-family:'Shippori Mincho',serif; color:#E8DCC8; font-size:15px; }
-
-/* ===== بطاقة النموذج ===== */
-.main { display:flex; align-items:center; justify-content:center; padding:40px 24px; }
-.form-card {
-    width:100%; max-width:440px;
-    background:var(--paper); border:1px solid rgba(184,147,74,.55);
-    border-top:5px solid var(--torii); border-radius:4px;
-    box-shadow:8px 8px 0 rgba(28,28,28,.10); padding:34px 32px;
-}
-.form-card h2 { font-family:'Aref Ruqaa',serif; font-size:40px; color:var(--torii); line-height:1.4; }
-.form-card h2 .en { font-size:20px; color:var(--sumi); }
-.sub { color:var(--muted); margin-bottom:18px; }
-.divider { height:2px; border:0; margin:10px 0 20px; background:linear-gradient(90deg,var(--gold),transparent); }
-
-label { display:block; font-weight:700; margin-top:14px; }
-label .en { font-weight:500; color:var(--muted); font-size:14px; }
-input[type=text], input[type=email], input[type=password] {
-    width:100%; margin-top:4px; padding:10px 14px;
-    background:#fff; border:1px solid var(--gold); border-radius:2px;
-    font-family:inherit; font-size:17px; color:var(--sumi); transition:.25s;
-}
-input:focus { outline:none; border-color:var(--torii); box-shadow:0 0 0 3px rgba(179,38,30,.15); }
-
-.remember { display:flex; align-items:center; gap:8px; margin-top:14px; font-weight:400; }
-.remember input { accent-color:var(--torii); width:17px; height:17px; }
-
-.btn {
-    width:100%; margin-top:22px; padding:12px;
-    background:var(--torii); color:#fff; border:1px solid var(--gold); border-radius:2px;
-    font-family:'Aref Ruqaa',serif; font-size:21px; cursor:pointer; transition:.3s;
-}
-.btn:hover { background:var(--gold); color:var(--sumi); }
-
-.links { margin-top:18px; text-align:center; font-size:16px; }
-.links a { color:var(--torii); text-decoration:none; border-bottom:1px solid var(--torii); }
-.links a:hover { color:var(--beni); }
-.links .row { margin-top:6px; }
-.back { display:inline-block; margin-top:16px; color:var(--muted); font-size:14px; text-decoration:none; }
-.back:hover { color:var(--torii); }
-
-.alert {
-    background:#FBE9E7; border:1px solid var(--torii); border-right:5px solid var(--torii);
-    color:var(--beni); padding:8px 14px; margin-bottom:12px; border-radius:2px; font-size:15px;
-}
-.status {
-    background:#EEF3E6; border:1px solid var(--matcha); border-right:5px solid var(--matcha);
-    color:#44552C; padding:8px 14px; margin-bottom:12px; border-radius:2px; font-size:15px;
-}
-
-/* ===== الجوال ===== */
-@media (max-width:820px) {
-    body { grid-template-columns:1fr; }
-    .side { padding:34px 20px; border-left:0; border-bottom:4px solid var(--gold); }
-    .side::before { width:170px; height:170px; }
-    .side h1 { font-size:42px; }
-    .side p, .side .en-line { font-size:15px; }
-    .form-card { padding:26px 20px; }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء حساب | SAKURA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --ink:#20201e; --paper:#f7f3ea; --red:#b92b21; --cream:#fffdf8; --muted:#777268; }
+        * { box-sizing:border-box; margin:0; padding:0; }
+        body { min-height:100vh; display:grid; grid-template-columns:minmax(320px,.85fr) 1.15fr; background:var(--paper); color:var(--ink); font-family:'Noto Naskh Arabic','Outfit',sans-serif; }
+        .brand-panel { min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:56px; background:var(--ink); color:#fff; position:relative; overflow:hidden; }
+        .brand-panel::after { content:'SAKURA'; position:absolute; width:320px; height:320px; left:-140px; bottom:-130px; display:grid; place-items:center; border-radius:50%; background:var(--red); color:rgba(255,255,255,.9); font-family:'Outfit',sans-serif; font-size:34px; letter-spacing:5px; }
+        .brand { position:absolute; top:36px; right:56px; color:#fff; text-decoration:none; font-family:'Outfit',sans-serif; font-size:22px; font-weight:700; letter-spacing:4px; }
+        .brand span { color:#df4a40; }
+        .brand-copy { position:relative; z-index:2; max-width:430px; }
+        .eyebrow { color:#d6bc83; font-family:'Outfit',sans-serif; font-size:12px; letter-spacing:.2em; }
+        .brand-copy h1 { margin:12px 0; font-size:48px; line-height:1.35; }
+        .brand-copy p { color:#d0cabb; font-size:17px; }
+        .main { display:flex; align-items:center; justify-content:center; padding:40px 24px; }
+        .card { width:min(440px,100%); }
+        .card h2 { font-size:38px; line-height:1.3; }
+        .subtitle { margin:8px 0 22px; color:var(--muted); }
+        .alert { margin-bottom:14px; padding:10px 14px; border-right:4px solid var(--red); border-radius:8px; background:#faeae7; color:#812019; }
+        label { display:block; margin:11px 0 5px; font-weight:700; }
+        label span { color:var(--muted); font-family:'Outfit',sans-serif; font-size:12px; font-weight:400; direction:ltr; }
+        input { width:100%; height:50px; border:1px solid #dcd3c2; border-radius:10px; background:var(--cream); padding:0 14px; color:var(--ink); font-family:inherit; font-size:16px; }
+        input:focus { outline:none; border-color:var(--red); box-shadow:0 0 0 3px rgba(185,43,33,.10); }
+        .btn { width:100%; height:52px; margin-top:18px; border:0; border-radius:999px; background:var(--red); color:#fff; cursor:pointer; font-family:inherit; font-size:17px; font-weight:700; }
+        .links { margin-top:16px; text-align:center; font-size:14px; }
+        .links a { color:var(--red); text-decoration:none; font-weight:700; }
+        .back { display:inline-block; margin-top:18px; color:var(--muted); text-decoration:none; }
+        @media (max-width:820px) { body { grid-template-columns:1fr; } .brand-panel { min-height:220px; padding:40px 24px; } .brand { top:24px; right:24px; } .brand-copy h1 { font-size:34px; } .brand-panel::after { width:170px; height:170px; left:-70px; bottom:-80px; font-size:18px; } .main { padding:42px 20px; } }
+    </style>
 </head>
-
 <body>
-
-{{-- ===== الجانب الياباني ===== --}}
-<div class="side">
-    <div class="jp">さくら</div>
-    <h1>SAKURA 桜</h1>
-    <p>أصالة المطبخ الياباني على مائدتك</p>
-    <div class="en-line">Authentic Japanese cuisine at your table</div>
-</div>
-
-<div class="main">
-<div class="form-card">
-
-    <h2>إنشاء حساب <span class="en">| Register</span></h2>
-    <p class="sub">انضم لعائلة ساكورا | Join the Sakura family</p>
-    <hr class="divider">
-
-    {{-- رسائل الأخطاء: تظهر تلقائي إذا البيانات غلط --}}
-    @if ($errors->any())
-        <div class="alert">
-            @foreach ($errors->all() as $error)
-                <div>{{ $error }}</div>
-            @endforeach
+    <aside class="brand-panel">
+        <a class="brand" href="{{ route('home') }}">SAKURA <span>桜</span></a>
+        <div class="brand-copy">
+            <div class="eyebrow">JOIN SAKURA</div>
+            <h1>انضم لعائلة ساكورا</h1>
+            <p>أنشئ حسابك واحصل على تجربة طلب أسهل وأسرع.</p>
         </div>
-    @endif
-
-    {{-- النموذج: الأسماء name, email, password, password_confirmation مطلوبة من Laravel --}}
-    <form method="POST" action="{{ Route::has('register.store') ? route('register.store') : url('/register') }}">
-        @csrf
-
-        <label for="name">الاسم <span class="en">Name</span></label>
-        <input type="text" id="name" name="name" value="{{ old('name') }}" required autofocus autocomplete="name">
-
-        <label for="email">البريد الإلكتروني <span class="en">Email</span></label>
-        <input type="email" id="email" name="email" value="{{ old('email') }}" required autocomplete="email">
-
-        <label for="password">كلمة المرور <span class="en">Password</span></label>
-        <input type="password" id="password" name="password" required autocomplete="new-password">
-
-        <label for="password_confirmation">تأكيد كلمة المرور <span class="en">Confirm Password</span></label>
-        <input type="password" id="password_confirmation" name="password_confirmation" required autocomplete="new-password">
-
-        <button type="submit" class="btn">إنشاء الحساب | Create Account</button>
-    </form>
-
-    <div class="links">
-        <div class="row">عندك حساب؟ <a href="{{ route('login') }}">سجّل دخول | Login</a></div>
-    </div>
-
-    <a href="{{ url('/') }}" class="back">← الرجوع للرئيسية | Back to Home</a>
-
-</div>
-</div>
-
+    </aside>
+    <main class="main">
+        <div class="card">
+            <h2>إنشاء حساب</h2>
+            <p class="subtitle">Create your Sakura account</p>
+            @if ($errors->any())
+                <div class="alert">@foreach ($errors->all() as $error)<div>{{ $error }}</div>@endforeach</div>
+            @endif
+            <form method="POST" action="{{ Route::has('register.store') ? route('register.store') : url('/register') }}">
+                @csrf
+                <label for="name">الاسم <span>Name</span></label>
+                <input type="text" id="name" name="name" value="{{ old('name') }}" required autofocus autocomplete="name">
+                <label for="email">البريد الإلكتروني <span>Email</span></label>
+                <input type="email" id="email" name="email" value="{{ old('email') }}" required autocomplete="email">
+                <label for="password">كلمة المرور <span>Password</span></label>
+                <input type="password" id="password" name="password" required autocomplete="new-password">
+                <label for="password_confirmation">تأكيد كلمة المرور <span>Confirm Password</span></label>
+                <input type="password" id="password_confirmation" name="password_confirmation" required autocomplete="new-password">
+                <button type="submit" class="btn">إنشاء الحساب | Register</button>
+            </form>
+            <div class="links">لديك حساب بالفعل؟ <a href="{{ route('login') }}">تسجيل الدخول</a></div>
+            <a class="back" href="{{ route('home') }}">← العودة للرئيسية</a>
+        </div>
+    </main>
 </body>
 </html>
