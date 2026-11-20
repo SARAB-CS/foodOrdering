@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>SAKURA | ساكورا - Japanese Restaurant</title>
 
 {{-- الخطوط: عربي خط رقعة للعناوين + نسخ للنص، وإنجليزي/ياباني Shippori Mincho --}}
@@ -470,13 +469,14 @@ footer .small { color: #A99C8A; font-size: 14px; margin-top: 10px; }
 <header>
     <div class="logo">SAKURA <span>桜</span></div>
 
-    <nav>
-        <a href="#home">الرئيسية | Home</a>
-        <a href="#menu">القائمة | Menu</a>
-        <a href="#main">الأطباق الرئيسية</a>
-        <a href="#desserts">الحلويات</a>
-        <a href="#drinks">المشروبات</a>
-        <a href="#service">التوصيل والاستلام</a>
+<nav>
+    <a href="#home">الرئيسية | Home</a>
+    <a href="#menu">القائمة | Menu</a>
+    <a href="{{ Route::has('cart') ? route('cart') : url('/cart') }}" class="cart-link">🛒 السلة | Cart</a>
+    <a href="#main">الأطباق الرئيسية</a>
+    <a href="#desserts">الحلويات</a>
+    <a href="#drinks">المشروبات</a>
+    <a href="#service">التوصيل والاستلام</a>
 
         {{-- روابط الدخول والتسجيل جاهزة من الـ starter kit --}}
         @auth
