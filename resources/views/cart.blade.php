@@ -75,18 +75,23 @@ nav a.cta:hover { background:var(--beni); }
 .panel h2 { font-family:'Aref Ruqaa',serif; font-size:30px; color:var(--torii); line-height:1.5; margin-bottom:8px; }
 .panel h2 .en { font-size:17px; color:var(--muted); }
 
+/* ترتيب صورة الطبق واسمه وأزرار الكمية */
 .item {
-    display:grid; grid-template-columns:78px 1fr auto; gap:16px; align-items:center;
-    padding:16px 0; border-top:1px solid rgba(184,147,74,.4);
+    display:grid; grid-template-columns:78px minmax(0,1fr) auto;
+    gap:14px; align-items:center; padding:14px 0;
+    border-top:1px solid rgba(184,147,74,.30);
 }
 .item:first-of-type { border-top:0; }
 .thumb {
     width:78px; height:78px; border:1px solid rgba(184,147,74,.55); border-radius:3px;
-    display:flex; align-items:center; justify-content:center;
-    background:
-        repeating-radial-gradient(circle at 50% 120%, transparent 0 10px, rgba(184,147,74,.20) 10px 11px),
-        linear-gradient(135deg,#EFE3D0,#E4D2B8);
-    font-family:'Shippori Mincho',serif; font-weight:800; font-size:26px; color:rgba(179,38,30,.35);
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+    background:linear-gradient(135deg,#EFE3D0,#E4D2B8);
+    flex-shrink:0;
+}
+.thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+.thumb-symbol {
+    font-family:'Shippori Mincho',serif; font-weight:800; font-size:26px;
+    color:rgba(179,38,30,.55);
 }
 .item h3 { font-family:'Aref Ruqaa',serif; font-size:23px; line-height:1.4; }
 .item .en-name { font-family:'Shippori Mincho',serif; color:var(--torii); font-weight:700; font-size:15px; }
@@ -199,13 +204,9 @@ input:focus, textarea:focus { outline:none; border-color:var(--torii); box-shado
 .loc-status { font-size:14px; margin-top:6px; min-height:22px; color:var(--muted); }
 .loc-status.ok  { color:var(--matcha); font-weight:700; }
 .loc-status.bad { color:var(--beni); }
-.map-frame { margin-top:8px; border:2px solid var(--gold); border-radius:3px; overflow:hidden; box-shadow:4px 4px 0 rgba(28,28,28,.10); }
-.map-frame iframe { width:100%; height:190px; border:0; display:block; }
-.map-frame a {
-    display:block; text-align:center; padding:5px; background:var(--sumi);
-    color:var(--gold); text-decoration:none; font-size:14px;
-}
-.map-frame a:hover { color:var(--washi); }
+.phone-status { font-size:14px; min-height:22px; color:var(--muted); }
+.phone-status.ok { color:var(--matcha); font-weight:700; }
+.phone-status.bad { color:var(--beni); }
 
 /* ============ رسالة نجاح الطلب ============ */
 .modal {
@@ -298,33 +299,22 @@ footer .small { color:#A99C8A; font-size:14px; margin-top:8px; }
                 <label class="field" for="address">العنوان <span class="en">Address</span></label>
                 <textarea id="address" placeholder="الحي، الشارع، رقم المبنى"></textarea>
 
-                {{-- ===== تحديد الموقع ===== --}}
+                {{-- ===== تحديد الموقع: خريطة واحدة وإحداثيات واحدة ===== --}}
                 <div class="loc">
                     <button type="button" class="loc-btn" id="locBtn">حدد موقعي | Use my location</button>
-                    <div class="loc-status" id="locStatus"></div>
-
-                    <div class="map-frame" id="mapBox" style="display:none">
-                        <iframe id="mapFrame" title="Map" loading="lazy"></iframe>
-                        <a id="mapLink" href="#" target="_blank" rel="noopener">عرض على الخريطة | Open in Maps</a>
-                    </div>
-
-                    {{-- الإحداثيات: الطالبة المسؤولة عن الطلبات تحفظها مع الطلب (latitude, longitude) --}}
-                    <input type="hidden" id="lat" name="latitude">
-                    <input type="hidden" id="lng" name="longitude">
+                    <p class="loc-status" id="locStatus" role="status" aria-live="polite">
+                        يمكنك الضغط على الخريطة لتحديد العنوان يدويًا إذا تعذر تحديد موقعك.
+                    </p>
                 </div>
-
-                {{-- ===== تحديد العنوان من الخريطة ===== --}}
-                <div class="map-tools">
-                    <button type="button" class="btn-sm" id="locateBtn">موقعي الحالي | My Location</button>
-                    <span class="map-hint">أو اضغط على الخريطة لتحديد موقع التوصيل | Or tap the map to pin your location</span>
-                </div>
-                <div id="map"></div>
-                <input type="hidden" id="lat" name="lat">
-                <input type="hidden" id="lng" name="lng">
+                <div id="map" aria-label="خريطة تحديد موقع التوصيل"></div>
+                <input type="hidden" id="lat" name="latitude">
+                <input type="hidden" id="lng" name="longitude">
             </div>
 
             <label class="field" for="phone">رقم الجوال <span class="en">Phone</span></label>
-            <input type="tel" id="phone" placeholder="05xxxxxxxx" dir="ltr">
+            <input type="tel" id="phone" name="phone" placeholder="05xxxxxxxx" dir="ltr"
+                   inputmode="tel" autocomplete="tel" maxlength="20" aria-describedby="phoneStatus">
+            <p class="phone-status" id="phoneStatus" role="status" aria-live="polite">الرقم السعودي: 05xxxxxxxx أو +9665xxxxxxxx</p>
 
             <div class="form-title">الدفع <span class="en">Payment</span></div>
             <div class="choice">
@@ -338,20 +328,20 @@ footer .small { color:#A99C8A; font-size:14px; margin-top:8px; }
             <textarea id="notes" placeholder="مثال: بدون حار"></textarea>
 
             <div class="err" id="err"></div>
-            <button type="button" class="btn" id="confirmBtn">تأكيد الطلب | Confirm Order</button>
+            <button type="button" class="btn" id="confirmBtn">إتمام الطلب | Place Order</button>
         </aside>
 
     </div>
 </main>
 
-{{-- ============ رسالة نجاح الطلب (شكلية) ============ --}}
-<div class="modal" id="doneModal">
+{{-- نافذة إتمام الطلب: TODO عرضها بعد نجاح الحفظ عند ربط النظام --}}
+<div class="modal" id="doneModal" role="dialog" aria-modal="true" aria-labelledby="doneModalTitle">
     <div class="modal-box">
         <div class="seal">桜</div>
-        <h2>شكرًا لك!</h2>
-        <p>تم استلام طلبك. | Your order has been received.</p>
-        <p class="en" style="color:var(--muted);font-size:14px">(نسخة تجريبية للتصميم | Design preview)</p>
-        <a href="{{ url('/') }}" class="btn link">الرجوع للرئيسية | Home</a>
+        <h2 id="doneModalTitle">تم إتمام الطلب! <span class="en" lang="en" dir="ltr" style="display:block;font-size:21px;color:var(--sumi)">Order Completed!</span></h2>
+        <p>شكرًا لاختيارك ساكورا! 🌸</p>
+        <p class="en" lang="en" dir="ltr">Thank you for choosing SAKURA!</p>
+        <button type="button" id="closeOrderModalBtn" class="btn">العودة إلى السلة | <span class="en" lang="en" dir="ltr">Back to Cart</span></button>
     </div>
 </div>
 
@@ -366,14 +356,44 @@ footer .small { color:#A99C8A; font-size:14px; margin-top:8px; }
 
 <script>
 // ============================================================
-//  هذي واجهة شكلية: الأطباق أدناه بيانات تجريبية.
-//  الطالبة المسؤولة عن السلة تستبدلها ببيانات السلة الحقيقية.
+// بيانات واجهة السلة الحالية — الربط بالطلبات الفعلية ضمن مهام الطالبة التالية.
+// المهام للطالبة التالية عند ربط Laravel:
+// 1) استبدال items بمنتجات السلة الحقيقية (id, ar, en, price, qty, image).
+// 2) جلب سعر كل منتج وحساب المجموع من السيرفر، وعدم الثقة بأسعار المتصفح.
+// 3) إرسال بيانات الطلب إلى Route/Controller مع CSRF والتحقق بالسيرفر.
+// 4) إظهار رسالة نجاح حقيقية فقط بعد نجاح حفظ الطلب فعليًا.
+// 5) إتمام أي دفع حقيقي في الباك إند؛ اختيار "بطاقة" هنا شكل واجهة فقط.
 // ============================================================
 var items = [
-    { ar: 'السوشي',        en: 'Sushi',          jp: '寿司', price: 28, qty: 1 },
-    { ar: 'الرامن',        en: 'Ramen',          jp: '拉麺', price: 32, qty: 2 },
-    { ar: 'شاي الماتشا',   en: 'Matcha Tea',     jp: '茶',   price: 15, qty: 1 }
+    // أمثلة للعرض: لا يتم إدراج بقية القائمة في السلة تلقائيًا.
+    { ar: 'السوشي',      en: 'Sushi',      jp: '寿司', price: 28, qty: 1, image: "{{ asset('images/sushi.jpg') }}" },
+    { ar: 'الرامن',      en: 'Ramen',      jp: '拉麺', price: 32, qty: 2, image: "{{ asset('images/ramen.jpg') }}" },
+    { ar: 'شاي الماتشا', en: 'Matcha Tea', jp: '茶',   price: 15, qty: 1, image: "{{ asset('images/matcha-tea.jpg') }}" }
 ];
+
+// ===== صور كل منتجات المنيو (10 منتجات) =====
+// الأسماء مطابقة لقائمة الصور الظاهرة في public/images/ في لقطة GitHub.
+// يمكن للطالبة المسؤولة عن السلة إرسال it.image مباشرة لكل منتج عند الربط.
+var PRODUCT_IMAGES = {
+    'السوشي':          "{{ asset('images/sushi.jpg') }}",
+    'الرامن':          "{{ asset('images/ramen.jpg') }}",
+    'دجاج الترياكي':   "{{ asset('images/teriyaki-chicken.jpg') }}",
+    'البنتو':          "{{ asset('images/bento-box.jpg') }}",
+    'كيكة الماتشا':    "{{ asset('images/matcha-cake.jpg') }}",
+    'آيس كريم الماتشا':"{{ asset('images/matcha-ice-cream.jpg') }}",
+    'دوراياكي':        "{{ asset('images/dorayaki.jpg') }}",
+    'شاي الماتشا':     "{{ asset('images/matcha-tea.jpg') }}",
+    'القهوة المثلجة':  "{{ asset('images/iced-coffee.jpg') }}",
+    'عصير الليمون':    "{{ asset('images/lemon-juice.jpg') }}"
+};
+
+// حماية النصوص المدخلة عند استخدامها داخل HTML.
+function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+}
+
 var DELIVERY_FEE = 10;
 
 function $(id) { return document.getElementById(id); }
@@ -395,9 +415,16 @@ function renderItems() {
         $('checkoutPanel').style.opacity = '1';
         $('confirmBtn').disabled = false;
         box.innerHTML = items.map(function (it, i) {
+            // إذا أُرسل رابط الصورة مع المنتج نستخدمه؛ وإلا نرجع لخريطة صور المنيو.
+            var imgUrl = it.image || PRODUCT_IMAGES[it.ar] || '';
+            var symbol = escapeHtml(it.jp || '桜');
+            var photo = imgUrl
+                ? '<img src="' + escapeHtml(imgUrl) + '" alt="' + escapeHtml(it.ar) + '" loading="lazy">'
+                : '';
             return '<div class="item">' +
-                '<div class="thumb">' + it.jp + '</div>' +
-                '<div><h3>' + it.ar + '</h3><div class="en-name">' + it.en + '</div>' +
+                '<div class="thumb">' + photo +
+                    '<span class="thumb-symbol"' + (imgUrl ? ' hidden' : '') + '>' + symbol + '</span></div>' +
+                '<div><h3>' + escapeHtml(it.ar) + '</h3><div class="en-name">' + escapeHtml(it.en) + '</div>' +
                 '<div class="unit">' + it.price + ' SAR</div></div>' +
                 '<div class="item-side">' +
                 '<div class="qty">' +
@@ -409,6 +436,15 @@ function renderItems() {
                 '<button type="button" class="remove" data-act="remove" data-i="' + i + '">حذف | Remove</button>' +
                 '</div></div>';
         }).join('');
+
+        // في حال كان اسم الصورة أو مسارها غير صحيح، يظهر الرمز الياباني بدل صورة مكسورة.
+        box.querySelectorAll('.thumb img').forEach(function (img) {
+            img.addEventListener('error', function () {
+                img.style.display = 'none';
+                var symbol = img.parentElement.querySelector('.thumb-symbol');
+                if (symbol) symbol.hidden = false;
+            });
+        });
     }
     renderTotals();
 }
@@ -433,140 +469,186 @@ $('cartItems').addEventListener('click', function (e) {
     renderItems();
 });
 
-// توصيل أو استلام: نظهر/نخفي العنوان ونحدث الرسوم
-document.querySelectorAll('input[name=order_type]').forEach(function (r) {
-    r.addEventListener('change', function () {
+// ====== التحقق من صيغة رقم الجوال السعودي (بدون إرسال رمز SMS) ======
+function normalizeSaudiPhone(value) {
+    var digits = String(value || '')
+        .replace(/[٠-٩]/g, function (d) { return String(d.charCodeAt(0) - 0x0660); })
+        .replace(/[۰-۹]/g, function (d) { return String(d.charCodeAt(0) - 0x06F0); })
+        .replace(/[\s\-()]/g, '');
+    if (digits.startsWith('00966')) digits = '0' + digits.slice(5);
+    else if (digits.startsWith('+966')) digits = '0' + digits.slice(4);
+    else if (digits.startsWith('966')) digits = '0' + digits.slice(3);
+    else if (/^5\d{8}$/.test(digits)) digits = '0' + digits;
+    return digits;
+}
+function isValidSaudiPhone(value) {
+    return /^05\d{8}$/.test(normalizeSaudiPhone(value));
+}
+function updatePhoneStatus() {
+    var phone = $('phone'), status = $('phoneStatus');
+    if (!phone.value.trim()) {
+        phone.classList.remove('invalid');
+        status.className = 'phone-status';
+        status.textContent = 'الرقم السعودي: 05xxxxxxxx أو +9665xxxxxxxx';
+        return false;
+    }
+    var ok = isValidSaudiPhone(phone.value);
+    phone.classList.toggle('invalid', !ok);
+    status.className = 'phone-status ' + (ok ? 'ok' : 'bad');
+    status.textContent = ok
+        ? 'صيغة رقم الجوال صحيحة ✓ | Valid number format'
+        : 'رقم غير صحيح: اكتبي 10 أرقام تبدأ بـ 05 أو استخدمي +9665xxxxxxxx';
+    return ok;
+}
+$('phone').addEventListener('input', updatePhoneStatus);
+
+// ====== الخريطة: نسخة واحدة من Leaflet مع إمكانية اختيار نقطة يدويًا ======
+var map = null;
+var marker = null;
+var addressAuto = true;
+var geocodeRequest = null;
+$('address').addEventListener('input', function () { addressAuto = false; });
+
+function showLocationStatus(message, state) {
+    var status = $('locStatus');
+    status.textContent = message;
+    status.className = 'loc-status' + (state ? ' ' + state : '');
+}
+
+function reverseGeocode(lat, lng) {
+    // الخدمة اختيارية؛ فشلها لا يلغي اختيار الإحداثيات.
+    if (!window.fetch) return;
+    if (geocodeRequest) geocodeRequest.abort();
+    geocodeRequest = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    var url = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&accept-language=ar'
+            + '&lat=' + encodeURIComponent(lat) + '&lon=' + encodeURIComponent(lng);
+    fetch(url, geocodeRequest ? { signal: geocodeRequest.signal } : {})
+        .then(function (response) {
+            if (!response.ok) throw new Error('Address lookup failed');
+            return response.json();
+        })
+        .then(function (data) {
+            if (data && data.display_name && (addressAuto || !$('address').value.trim())) {
+                $('address').value = data.display_name;
+                addressAuto = true;
+            }
+        })
+        .catch(function (error) {
+            if (error.name !== 'AbortError') {
+                showLocationStatus('تم تحديد النقطة؛ اكتبي العنوان يدويًا إذا لم يظهر تلقائيًا.', 'ok');
+            }
+        });
+}
+
+function setPin(lat, lng, recenter) {
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+    $('lat').value = lat.toFixed(6);
+    $('lng').value = lng.toFixed(6);
+    if (map) {
+        if (!marker) {
+            marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+            marker.on('dragend', function () {
+                var position = marker.getLatLng();
+                setPin(position.lat, position.lng, false);
+            });
+        } else {
+            marker.setLatLng([lat, lng]);
+        }
+        if (recenter) map.setView([lat, lng], 16);
+    }
+    $('err').textContent = '';
+    showLocationStatus('تم تحديد موقع التوصيل ✓ ويمكنك تحريك الدبوس لتعديله.', 'ok');
+    reverseGeocode(lat, lng);
+}
+
+if (typeof L !== 'undefined') {
+    map = L.map('map').setView([21.5433, 39.1728], 12);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+    map.on('click', function (event) {
+        setPin(event.latlng.lat, event.latlng.lng, false);
+    });
+} else {
+    $('map').textContent = 'تعذر تحميل الخريطة. يمكنك كتابة عنوان التوصيل يدويًا.';
+    showLocationStatus('تعذر تحميل الخريطة؛ تأكدي من الاتصال بالإنترنت أو اكتبي العنوان.', 'bad');
+}
+
+$('locBtn').addEventListener('click', function () {
+    var button = $('locBtn');
+    if (!window.isSecureContext) {
+        showLocationStatus('تحديد الموقع يحتاج HTTPS أو localhost. يمكنك الضغط على الخريطة أو كتابة العنوان.', 'bad');
+        return;
+    }
+    if (!navigator.geolocation) {
+        showLocationStatus('المتصفح لا يدعم تحديد الموقع. اضغطي على الخريطة أو اكتبي العنوان.', 'bad');
+        return;
+    }
+    button.disabled = true;
+    showLocationStatus('جاري طلب إذن الموقع وتحديد موقعك...');
+    navigator.geolocation.getCurrentPosition(
+        function (position) {
+            setPin(position.coords.latitude, position.coords.longitude, true);
+            button.disabled = false;
+        },
+        function (error) {
+            var message = 'تعذر تحديد الموقع. اضغطي على الخريطة أو اكتبي العنوان.';
+            if (error.code === 1) message = 'تم رفض إذن الموقع؛ اسمحي بالوصول للموقع من إعدادات المتصفح أو حدديه على الخريطة.';
+            if (error.code === 2) message = 'موقع الجهاز غير متاح حاليًا؛ جربي تفعيل خدمات الموقع أو اختاري من الخريطة.';
+            if (error.code === 3) message = 'انتهت مهلة تحديد الموقع؛ أعيدي المحاولة أو اختاري من الخريطة.';
+            showLocationStatus(message, 'bad');
+            button.disabled = false;
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+    );
+});
+
+// توصيل أو استلام: إظهار/إخفاء العنوان وتحديث رسوم التوصيل.
+document.querySelectorAll('input[name=order_type]').forEach(function (radio) {
+    radio.addEventListener('change', function () {
         $('addressBox').style.display = isDelivery() ? 'block' : 'none';
-        if (isDelivery()) { setTimeout(function () { map.invalidateSize(); }, 60); }
+        if (isDelivery() && map) setTimeout(function () { map.invalidateSize(); }, 60);
         renderTotals();
     });
 });
 
-// تأكيد الطلب (تحقق بسيط من الحقول)
+// ====== تحقق واجهة المستخدم فقط؛ الحفظ الفعلي مسؤولية الباك إند ======
 $('confirmBtn').addEventListener('click', function () {
-    var phone = $('phone'), address = $('address'), err = $('err');
-    phone.classList.remove('invalid'); address.classList.remove('invalid'); err.textContent = '';
+    var phone = $('phone'), address = $('address'), error = $('err');
+    address.classList.remove('invalid');
+    error.textContent = '';
 
-    var phoneOk = /^[0-9+\s-]{9,15}$/.test(phone.value.trim());
-    // العنوان مقبول إذا كتبتيه يدوي أو حددتي موقعك
-    var addrOk = !isDelivery() || address.value.trim().length >= 5 || $('lat').value !== '';
-    var pinOk = !isDelivery() || $('lat').value !== '';
-
-    if (!phoneOk) { phone.classList.add('invalid'); err.textContent = 'اكتب رقم جوال صحيح | Enter a valid phone number'; return; }
-    if (!pinOk)   { err.textContent = 'حدد موقعك على الخريطة | Pin your location on the map'; return; }
-    if (!addrOk)  { address.classList.add('invalid'); err.textContent = 'اكتب عنوان التوصيل أو حدد موقعك | Enter your address or use your location'; return; }
-
-    // هنا الطالبة المسؤولة عن الطلبات ترسل البيانات للسيرفر وتحفظها في الداتا بيس
-    $('doneModal').classList.add('open');
-});
-
-// ============================================================
-//  الخريطة: Leaflet + OpenStreetMap
-//  تغيير مركز الخريطة الافتراضي: عدلي الإحداثيات أدناه.
-// ============================================================
-var map = L.map('map').setView([21.5433, 39.1728], 12);   // [خط العرض، خط الطول]، 12 = مستوى التقريب
-
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; OpenStreetMap'
-}).addTo(map);
-
-// دبوس بشكل ياباني (أحمر مع 桜)
-var pinIcon = L.divIcon({
-    className: 'pin-icon',
-    html: '<div class="pin"><span>桜</span></div>',
-    iconSize: [34, 34],
-    iconAnchor: [17, 34]
-});
-
-var marker = null;
-var addressAuto = true;   // true = العنوان معبّى تلقائي من الخريطة (ما كتبته المستخدمة)
-
-// لما تكتب المستخدمة العنوان بنفسها ما نمسحه
-$('address').addEventListener('input', function () { addressAuto = false; });
-
-// تحويل الإحداثيات إلى عنوان مكتوب (خدمة Nominatim المجانية)
-function reverseGeocode(lat, lng) {
-    fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&accept-language=ar&lat=' + lat + '&lon=' + lng)
-        .then(function (r) { return r.json(); })
-        .then(function (d) {
-            if (d && d.display_name && (addressAuto || $('address').value.trim() === '')) {
-                $('address').value = d.display_name;
-                addressAuto = true;
-            }
-        })
-        .catch(function () { /* إذا ما اشتغلت الخدمة تكتب المستخدمة العنوان بنفسها */ });
-}
-
-// وضع الدبوس وحفظ الإحداثيات (للطالبة المسؤولة عن الطلبات: lat و lng تنحفظ مع الطلب)
-function setPin(lat, lng, move) {
-    if (!marker) {
-        marker = L.marker([lat, lng], { icon: pinIcon, draggable: true }).addTo(map);
-        marker.on('dragend', function () {
-            var p = marker.getLatLng();
-            setPin(p.lat, p.lng, false);
-        });
-    } else {
-        marker.setLatLng([lat, lng]);
+    if (!items.length) {
+        error.textContent = 'السلة فارغة | Your cart is empty';
+        return;
     }
-    if (move) { map.setView([lat, lng], 16); }
-    $('lat').value = lat.toFixed(6);
-    $('lng').value = lng.toFixed(6);
-    $('err').textContent = '';
-    reverseGeocode(lat, lng);
-}
-
-// الضغط على الخريطة
-map.on('click', function (e) { setPin(e.latlng.lat, e.latlng.lng, false); });
-
-// زر "موقعي الحالي"
-$('locateBtn').addEventListener('click', function () {
-    if (!navigator.geolocation) { $('err').textContent = 'المتصفح ما يدعم تحديد الموقع | Geolocation not supported'; return; }
-    navigator.geolocation.getCurrentPosition(
-        function (pos) { setPin(pos.coords.latitude, pos.coords.longitude, true); },
-        function () { $('err').textContent = 'ما قدرنا نحدد موقعك، اضغطي على الخريطة | Could not get location, tap the map'; }
-    );
-});
-
-// ===== تحديد الموقع (يستخدم موقع المتصفح، بدون مفتاح ولا حساب) =====
-$('locBtn').addEventListener('click', function () {
-    var btn = $('locBtn'), st = $('locStatus');
-    st.className = 'loc-status';
-
-    if (!navigator.geolocation) {
-        st.className = 'loc-status bad';
-        st.textContent = 'المتصفح لا يدعم تحديد الموقع | Geolocation is not supported';
+    if (!updatePhoneStatus()) {
+        error.textContent = 'الرجاء إدخال رقم جوال سعودي صحيح.';
+        phone.focus();
         return;
     }
 
-    btn.disabled = true;
-    st.textContent = 'جاري تحديد موقعك... | Locating...';
+    // إذا تعذر تحديد النقطة، يمكن كتابة عنوان واضح بدلًا منها.
+    var hasPin = $('lat').value !== '' && $('lng').value !== '';
+    var hasAddress = address.value.trim().length >= 10;
+    if (isDelivery() && !hasPin && !hasAddress) {
+        address.classList.add('invalid');
+        error.textContent = 'حددي موقعك على الخريطة أو اكتبي عنوان التوصيل (10 أحرف على الأقل).';
+        address.focus();
+        return;
+    }
 
-    navigator.geolocation.getCurrentPosition(function (pos) {
-        var lat = pos.coords.latitude.toFixed(6), lng = pos.coords.longitude.toFixed(6);
-        var d = 0.004; // مساحة العرض حول الموقع على الخريطة
+    // تطبيع الرقم لتتمكن الطالبة المسؤولة عن الطلبات من قراءته لاحقًا.
+    phone.value = normalizeSaudiPhone(phone.value);
+    // TODO: عند ربط Laravel، لا تفتحي النافذة إلا بعد نجاح حفظ الطلب من السيرفر.
+    // TODO للطالبة التالية: إرسال الطلب للسيرفر، واستبدال هذا الفتح بفتح بعد استجابة ناجحة.
+    $('doneModal').classList.add('open');
+});
 
-        $('lat').value = lat;
-        $('lng').value = lng;
-
-        // الخريطة: OpenStreetMap مع علامة على الموقع
-        var bbox = (+lng - d) + ',' + (+lat - d) + ',' + (+lng + d) + ',' + (+lat + d);
-        $('mapFrame').src = 'https://www.openstreetmap.org/export/embed.html?bbox=' + bbox + '&layer=mapnik&marker=' + lat + ',' + lng;
-        $('mapLink').href = 'https://www.google.com/maps?q=' + lat + ',' + lng;
-        $('mapBox').style.display = 'block';
-
-        st.className = 'loc-status ok';
-        st.textContent = 'تم تحديد موقعك | Location set (' + lat + ', ' + lng + ')';
-        btn.disabled = false;
-    }, function (e) {
-        var msg = 'تعذر تحديد الموقع | Could not get your location';
-        if (e.code === 1) msg = 'رفضتي السماح بالموقع. فعّليه من إعدادات المتصفح | Location permission denied';
-        if (e.code === 2) msg = 'الموقع غير متاح الحين | Location unavailable';
-        if (e.code === 3) msg = 'انتهت مهلة التحديد، جربي مرة ثانية | Timed out, try again';
-        st.className = 'loc-status bad';
-        st.textContent = msg;
-        btn.disabled = false;
-    }, { enableHighAccuracy: true, timeout: 12000 });
+$('closeOrderModalBtn').addEventListener('click', function () {
+    $('doneModal').classList.remove('open');
+    $('confirmBtn').focus();
 });
 
 renderItems();

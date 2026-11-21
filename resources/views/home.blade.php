@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>SAKURA | ساكورا - Japanese Restaurant</title>
 
 {{-- الخطوط: عربي خط رقعة للعناوين + نسخ للنص، وإنجليزي/ياباني Shippori Mincho --}}
@@ -60,7 +61,8 @@ header {
 }
 .logo span { color: var(--torii); margin-left: 8px; }
 
-nav { display: flex; gap: 26px; align-items: center; }
+nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px 22px; align-items: center; }
+nav a { white-space: nowrap; }
 nav a {
     color: var(--washi);
     text-decoration: none;
@@ -367,6 +369,7 @@ a.card { display: block; text-decoration: none; color: inherit; }
 .modal-close:hover { background: var(--torii); }
 
 .modal-photo {
+    background-color: #fff;
     min-height: 360px;
     display: flex; align-items: center; justify-content: center;
     background:
@@ -374,7 +377,7 @@ a.card { display: block; text-decoration: none; color: inherit; }
         linear-gradient(135deg, #EFE3D0, #E4D2B8);
     border-left: 1px solid rgba(184,147,74,.55);
 }
-.modal-photo img { width: 100%; height: 100%; object-fit: cover; }
+.modal-photo img { width: 100%; height: auto; max-height: 100%; object-fit: contain; display: block; }
 .modal-photo span {
     font-family: 'Shippori Mincho', serif; font-weight: 800;
     font-size: 100px; color: rgba(179,38,30,.32); letter-spacing: 6px;
@@ -469,14 +472,11 @@ footer .small { color: #A99C8A; font-size: 14px; margin-top: 10px; }
 <header>
     <div class="logo">SAKURA <span>桜</span></div>
 
-<nav>
-    <a href="#home">الرئيسية | Home</a>
-    <a href="#menu">القائمة | Menu</a>
-    <a href="{{ Route::has('cart') ? route('cart') : url('/cart') }}" class="cart-link">🛒 السلة | Cart</a>
-    <a href="#main">الأطباق الرئيسية</a>
-    <a href="#desserts">الحلويات</a>
-    <a href="#drinks">المشروبات</a>
-    <a href="#service">التوصيل والاستلام</a>
+    <nav>
+        <a href="#home">الرئيسية | Home</a>
+        <a href="#menu">القائمة | Menu</a>
+        <a href="#service">التوصيل والاستلام</a>
+        <a href="{{ url('/cart') }}">السلة | Cart</a>
 
         {{-- روابط الدخول والتسجيل جاهزة من الـ starter kit --}}
         @auth
@@ -859,7 +859,14 @@ footer .small { color: #A99C8A; font-size: 14px; margin-top: 10px; }
         price = parseFloat(d.price);
         qty = 1;
 
-        $('mJp').textContent = d.jp;
+        // صورة النافذة: إذا الكرت له صورة نعرضها، وإلا نعرض الكلمة اليابانية
+        if (card.dataset.imgUrl) {
+            $('mPhoto').innerHTML = '<img src="' + card.dataset.imgUrl + '" alt="' + d.en + '">';
+            $('mPhoto').style.background = '#fff';   // خلفية بيضاء تناسب الصور
+        } else {
+            $('mPhoto').innerHTML = '<span>' + d.jp + '</span>';
+            $('mPhoto').style.background = '';        // نرجع النقش الياباني
+        }
         $('mCat').innerHTML = d.cat + ' <span class="en">' + d.catEn + '</span>';
         $('mAr').textContent = d.ar;
         $('mEn').textContent = d.en;
@@ -872,7 +879,8 @@ footer .small { color: #A99C8A; font-size: 14px; margin-top: 10px; }
         list.innerHTML = '';
         ar.forEach(function (item, i) {
             var li = document.createElement('li');
-            li.textContent = item + ' · ' + (en[i] || '');
+            var e = en[i] || '';
+            li.textContent = item + ' · ' + e.charAt(0).toUpperCase() + e.slice(1);
             list.appendChild(li);
         });
 
@@ -911,6 +919,40 @@ footer .small { color: #A99C8A; font-size: 14px; margin-top: 10px; }
         var t = $('toast');
         t.classList.add('show');
         setTimeout(function () { t.classList.remove('show'); }, 2200);
+    });
+})();
+</script>
+
+<script>
+// ===== ربط صور الأطباق تلقائي =====
+// حطي الصورة في public/images/ باسم الطبق الإنجليزي (حروف صغيرة وشرطة بدل المسافة).
+// مثال: Sushi  ->  sushi.jpg   |   Teriyaki Chicken  ->  teriyaki-chicken.jpg
+// إذا الصورة ما وُجدت يبقى مكانها الشكل الياباني، فما يخرب شي.
+(function () {
+    var BASE = "{{ asset('images') }}/";
+    var exts = ['jpg', 'jpeg', 'png', 'webp'];
+
+    document.querySelectorAll('.card').forEach(function (card) {
+        var slug = (card.dataset.en || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+        function tryExt(i) {
+            if (i >= exts.length) return;
+            var url = BASE + slug + '.' + exts[i];
+            var img = new Image();
+            img.onload = function () {
+                card.dataset.imgUrl = url;                 // تستخدمها النافذة
+                var ph = card.querySelector('.photo');
+                if (ph) {
+                    ph.innerHTML = '';
+                    var im = document.createElement('img');
+                    im.src = url; im.alt = card.dataset.en;
+                    ph.appendChild(im);
+                }
+            };
+            img.onerror = function () { tryExt(i + 1); };
+            img.src = url;
+        }
+        tryExt(0);
     });
 })();
 </script>
